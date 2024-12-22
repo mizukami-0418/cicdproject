@@ -14,15 +14,16 @@ from pathlib import Path
 import environ
 
 env = environ.Env(
-    DEBUG=(bool, False)
+    # 環境変数とそのデフォルト値を定義
+    DEBUG=(bool, False)  # DEBUG はデフォルトで False
 )
 
-# .env ファイルをロード
-environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# .env ファイルを明示的に読み込む
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -31,9 +32,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
+DEBUG = env('DEBUG')  
 
-ALLOWED_HOSTS = []
+# Allowed Hosts
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')  # カンマ区切りでリストに変換
 
 
 # Application definition
