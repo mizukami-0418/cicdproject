@@ -24,7 +24,7 @@ env = environ.Env(
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env ファイルを明示的に読み込む
-if os.environ.get('DJANGO_DECELOPMENT') == 'True':
+if os.environ.get('DJANGO_DEVELOPMENT') == 'True':
     environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
