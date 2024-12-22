@@ -20,7 +20,7 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v4
               with:
-                python-version: '3.12.8'
+                python-version: '3.12'
             
             # 3. 依存関係のインストール
             - name: Install dependencies
@@ -28,25 +28,30 @@ jobs:
                 python -m pip install --upgrade pip
                 pip install -r requirements.txt
 
-            # 4. データベースのマイグレーション
-            - name: Run migrations
+
+            # 2. Heroku CLIのインストールとログイン
+            - name: Install Heroku CLI
               run: |
-                python manage.py migrate
+                curl https://cli-assets.heroku.com/install.sh | sh
+                echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:login --with-token
+            
+            # Herokuリモートを設定
+            - name: Add Heroku remote
+              run: |
+                heroku git:remote -a helloworld-tamk
             
             # 環境変数をherokuに登録
             - name: Set environment variables on Heroku
               run: |
                 heroku config:set SECRET_KEY=${{ secrets.SECRET_KEY }} --app helloworld-tamk
                 heroku config:set ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} --app helloworld-tamk
-
-            # 2. Heroku CLIのインストール
-            - name: Install Heroku CLI
+            
+            # 4. データベースのマイグレーション
+            - name: Run migrations
               run: |
-                curl https://cli-assets.heroku.com/install.sh | sh
-                echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:login --with-token
-
+                python manage.py migrate
+            
             # 3. Herokuにデプロイ
             - name: Deploy to Heroku
               run: |
-                heroku git:remote -a helloworld-tamk
                 git push heroku deploy:main
