@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import environ
+import os
 
 env = environ.Env(
     # 環境変数とそのデフォルト値を定義
