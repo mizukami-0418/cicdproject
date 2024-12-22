@@ -24,7 +24,8 @@ env = environ.Env(
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # .env ファイルを明示的に読み込む
-environ.Env.read_env(BASE_DIR / ".env")
+if os.environ.get('DJANGO_DECELOPMENT') == 'True':
+    environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -37,7 +38,7 @@ DEBUG = env('DEBUG')
 
 # Allowed Hosts
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')  # カンマ区切りでリストに変換
-
+print(ALLOWED_HOSTS)
 
 # Application definition
 
