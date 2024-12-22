@@ -32,12 +32,18 @@ jobs:
             - name: Run migrations
               run: |
                 python manage.py migrate
+            
+            # 環境変数をherokuに登録
+            - name: Set environment variables on Heroku
+              run: |
+                heroku config:set SECRET_KEY=${{ secrets.SECRET_KEY }} --app helloworld-tamk
+                heroku config:set ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} --app helloworld-tamk
 
             # 2. Heroku CLIのインストール
             - name: Install Heroku CLI
               run: |
                 curl https://cli-assets.heroku.com/install.sh | sh
-                echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+                echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:login --with-token
 
             # 3. Herokuにデプロイ
             - name: Deploy to Heroku
