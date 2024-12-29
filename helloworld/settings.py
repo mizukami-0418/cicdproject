@@ -14,32 +14,29 @@ from pathlib import Path
 import environ
 import os
 
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 env = environ.Env(
     # 環境変数とそのデフォルト値を定義
     DEBUG=(bool, False)  # DEBUG はデフォルトで False
 )
 
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 # .env ファイルを明示的に読み込む
-if os.environ.get('DJANGO_DEVELOPMENT') == 'True':
-    environ.Env.read_env(BASE_DIR / ".env")
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')  
 
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env('SECRET_KEY')
+
 # Allowed Hosts
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')  # カンマ区切りでリストに変換
-print(ALLOWED_HOSTS)
-
 # Application definition
 
 INSTALLED_APPS = [

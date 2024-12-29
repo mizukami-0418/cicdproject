@@ -2,61 +2,51 @@ name: Django CI/CD
 
 # ワークフローを実行するタイミングを設定
 on:
-    push:
-        branches:
-            - deploy
-            - feature/* # deployブランチにpushされたとき
+  push:
+    branches:
+      - deploy
+      - feature/* # deployブランチにpushされたとき
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest # GitHub Actionsでが使用するosを指定
+  deploy:
+    runs-on: ubuntu-latest # GitHub Actionsでが使用するosを指定
 
-        steps:
-            # 1. コードのチェックアウト
-            - name: Checkout code
-              uses: actions/checkout@v3
-            
-            # 2. Pythonのセットアップ
-            - name: Set up Python
-              uses: actions/setup-python@v4
-              with:
-                python-version: '3.12'
-            
-            # 3. 依存関係のインストール
-            - name: Install dependencies
-              run: |
-                python -m pip install --upgrade pip
-                pip install -r requirements.txt
+    steps:
+      # 1. コードのチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # 2. Pythonのセットアップ
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      # 3. 依存関係のインストール
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
+      # 4. 環境変数をHerokuに設定
+      - name: Set Heroku Config Vars
+        run: |
+          heroku config:set SECRET_KEY=${{ secrets.SECRET_KEY }} --app helloworld-tamk
+          heroku config:set ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} --app helloworld-tamk
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
-            # 2. Heroku CLIのインストールとログイン
-            - name: Install Heroku CLI
-              run: |
-                curl https://cli-assets.heroku.com/install.sh | sh
+      # 5. Herokuへのデプロイ
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: helloworld-tamk
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
 
-            - name: Login to Heroku
-              env:  # 環境変数を設定
-                HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-              run: |
-                echo $HEROKU_API_KEY | heroku auth:token
-            
-            # Herokuリモートを設定
-            - name: Add Heroku remote
-              run: |
-                heroku git:remote -a helloworld-tamk
-            
-            # 環境変数をherokuに登録
-            - name: Set environment variables on Heroku
-              run: |
-                heroku config:set SECRET_KEY=${{ secrets.SECRET_KEY }} --app helloworld-tamk
-                heroku config:set ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} --app helloworld-tamk
-            
-            # 4. データベースのマイグレーション
-            - name: Run migrations
-              run: |
-                python manage.py migrate
-            
-            # 3. Herokuにデプロイ
-            - name: Deploy to Heroku
-              run: |
-                git push heroku deploy:main
+      # 6. データベースのマイグレーション
+      - name: Run migrations
+        run: |
+          heroku run python manage.py migrate --app helloworld-tamk
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
