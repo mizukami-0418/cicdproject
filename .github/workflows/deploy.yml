@@ -37,12 +37,12 @@ jobs:
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
 
       # 5. 環境変数をHerokuに設定
-      - name: Set Heroku Config Vars
-        run: |
-          heroku config:set SECRET_KEY=${{ secrets.SECRET_KEY }} --app helloworld-tamk
-          heroku config:set ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} --app helloworld-tamk
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      # - name: Set Heroku Config Vars
+      #   run: |
+      #     heroku config:set SECRET_KEY={{ secrets.SECRET_KEY }} --app helloworld-tamk
+      #     heroku config:set ALLOWED_HOSTS={{ secrets.ALLOWED_HOSTS }} --app helloworld-tamk
+      #   env:
+      #     HEROKU_API_KEY: {{ secrets.HEROKU_API_KEY }}
 
 
       # 6. データベースのマイグレーション
