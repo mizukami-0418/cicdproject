@@ -28,7 +28,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. 環境変数をHerokuに設定
+      # 4. Herokuへのデプロイ
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: helloworld-tamk
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+
+      # 5. 環境変数をHerokuに設定
       - name: Set Heroku Config Vars
         run: |
           heroku config:set SECRET_KEY=${{ secrets.SECRET_KEY }} --app helloworld-tamk
@@ -36,13 +44,6 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
 
-      # 5. Herokuへのデプロイ
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: helloworld-tamk
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
 
       # 6. データベースのマイグレーション
       - name: Run migrations
